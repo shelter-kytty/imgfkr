@@ -1,0 +1,27 @@
+[project]
+name = "imgfkr"
+version = "0.1.0"
+description = "A simple image processing suite"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE.md"] 
+authors = [
+    { name = "shelter_kytty" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/shelter-kytty/imgfkr"
+
+[project.scripts]
+imgfkr = "imgfkr:main"
+
+[tool.maturin]
+module-name = "imgfkr._core"
+python-packages = ["imgfkr"]
+python-source = "src"
+
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
