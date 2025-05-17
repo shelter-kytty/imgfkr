@@ -9,5 +9,8 @@ wheels/
 # Virtual environments
 .venv
 
+# Other
 /target
 /data
+
+*.abi3.so

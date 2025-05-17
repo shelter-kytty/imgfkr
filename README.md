@@ -1,5 +1,5 @@
 # imgfkr
 
-A cli image processing suite, using a python frontend for maintainability, and rust backend for performance.
+A simple image processing tool, made in Rust/Python.
 
-This is a recreation of a tool I originally made in with python alone, which I thought would be a fun learning experience when I realised how slow the original ran and how inconsistent the results were.
+This is a recreation of a tool I originally made in with Python alone, which was getting too slow to be practical.
