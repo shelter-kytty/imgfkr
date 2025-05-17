@@ -9,7 +9,10 @@ authors = [
     { name = "shelter_kytty" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "numpy>=2.2.5",
+    "opencv-python>=4.11.0.86",
+]
 
 [project.urls]
 Repository = "https://github.com/shelter-kytty/imgfkr"
@@ -18,7 +21,7 @@ Repository = "https://github.com/shelter-kytty/imgfkr"
 imgfkr = "imgfkr:main"
 
 [tool.maturin]
-module-name = "imgfkr._core"
+module-name = "imgfkr.core"
 python-packages = ["imgfkr"]
 python-source = "src"
 
