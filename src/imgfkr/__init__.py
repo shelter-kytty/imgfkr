@@ -9,8 +9,8 @@ def main() -> None:
     
     result = core.contrastMask(greyscale, 40, 180)
 
-    cv2.imwrite("./data/out/out.jpg", result)
+    cv2.imwrite("./data/out/out2.jpg", result)
 
     result = core.hSort(colour, result)
 
-    cv2.imwrite("./data/out/out2.jpg", result)
+    cv2.imwrite("./data/out/out1.jpg", result)

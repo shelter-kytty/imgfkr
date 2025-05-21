@@ -1,14 +1,11 @@
 use ndarray::{s, Dim, Zip};
-use numpy::ndarray::{self, Array, ArrayView};
+use numpy::ndarray::{self, Array, ArrayView, Axis};
 use numpy::{Ix2, Ix3, PyArray, PyArrayMethods, ToPyArray};
 use pyo3::prelude::*;
 use pyo3::{pymodule, types::PyModule, Bound, PyResult, Python};
 use std::ops::Range;
 
-fn h_sort<'a>(colour: ArrayView<'a, u8, Ix3>, mask: ArrayView<'a, u8, Ix2>) -> Array<usize, Ix2> {
-    let mut _result: Array<u8, Ix3> = Array::zeros(colour.raw_dim());
-
-    // TODO: Put this into its own method
+fn contrast_gradient<'a>(mask: ArrayView<'a, u8, Ix2>) -> Array<usize, Ix2> {
     let mut tallies: Array<usize, Ix2> = Array::zeros(mask.raw_dim());
 
     let mut i = 0;
@@ -24,15 +21,49 @@ fn h_sort<'a>(colour: ArrayView<'a, u8, Ix3>, mask: ArrayView<'a, u8, Ix2>) -> A
                     - 1;
                 row[i] = idx;
                 i += idx;
-
-                println!("idx = {}", idx);
             }
         }
     }
-    // /TODO
-
 
     return tallies;
+}
+
+fn h_edge_mask<'a>(mask: ArrayView<'a, u8, Ix2>) -> Array<usize, Ix2> {
+    let mut tallies: Array<usize, Ix2> = Array::zeros(mask.raw_dim());
+
+    let mut j = 0;
+    for mut row in tallies.rows_mut() {
+        let mask_row = mask.row(j);
+        j += 1;
+        let mut count = 0;
+        for i in 0..row.iter().count() {
+            if count > 0 {
+                count -= 1;
+                continue;
+            }
+
+            if mask_row[i] == u8::MAX {
+                let view = (&mask_row.slice(s![i..]));
+                let idx = view
+                    .iter()
+                    .position(|a| *a == 0)
+                    .unwrap_or(view.iter().count() + 1)
+                    - 1;
+                row[i] = idx;
+                count += idx;
+            }
+        }
+    }
+
+    return tallies;
+}
+
+fn h_sort<'a>(colour: ArrayView<'a, u8, Ix3>, mask: ArrayView<'a, u8, Ix2>) -> Array<u8, Ix3> {
+    let mut result: Array<u8, Ix3> = Array::zeros(colour.raw_dim());
+
+    let edges: Array<usize, Ix2> = h_edge_mask(mask);
+
+    return result;
 }
 
 #[pyfunction]
@@ -41,12 +72,11 @@ fn h_sort_py<'py>(
     py: Python<'py>,
     colour: &Bound<'py, PyArray<u8, Ix3>>,
     mask: &Bound<'py, PyArray<u8, Ix2>>,
-) -> PyResult<Bound<'py, PyArray<usize, Dim<[usize; 2]>>>> {
+) -> PyResult<Bound<'py, PyArray<u8, Dim<[usize; 3]>>>> {
     let colour = unsafe { colour.as_array() };
     let mask = unsafe { mask.as_array() };
     Ok(h_sort(colour, mask).to_pyarray(py))
 }
-
 
 fn contrast_mask<'a>(greyscale: ArrayView<'a, u8, Ix2>, range: Range<u8>) -> Array<u8, Ix2> {
     let mut result: Array<u8, Ix2> = Array::zeros(greyscale.raw_dim());
